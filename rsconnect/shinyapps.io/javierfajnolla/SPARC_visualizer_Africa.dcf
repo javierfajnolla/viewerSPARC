@@ -1,0 +1,12 @@
+name: SPARC_visualizer_Africa
+title: SPARC_visualizer_Africa
+username:
+account: javierfajnolla
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 637322
+bundleId: 1809259
+url: https://javierfajnolla.shinyapps.io/SPARC_visualizer_Africa/
+when: 1547225146.19674
+asMultiple: FALSE
+asStatic: FALSE

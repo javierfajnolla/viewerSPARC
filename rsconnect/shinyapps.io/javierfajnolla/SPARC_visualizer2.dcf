@@ -1,0 +1,12 @@
+name: SPARC_visualizer2
+title: SPARC_visualizer2
+username:
+account: javierfajnolla
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 543468
+bundleId: 1806960
+url: https://javierfajnolla.shinyapps.io/SPARC_visualizer2/
+when: 1547132635.33737
+asMultiple: FALSE
+asStatic: FALSE
