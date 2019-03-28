@@ -101,15 +101,15 @@ function(input, output, session) {
   rvs$plot_solution <- solution
   
   observeEvent(input$speed, {
-    if (input$speed == "Slow - max detail"){
+    if (input$speed == "Slow"){
       glue::glue("Now it is in slow") %>% print
       rvs$plot_solution <- solution
     } 
-    if (input$speed == "Medium - medium detail"){
+    if (input$speed == "Medium"){
       glue::glue("Now it is in medium") %>% print
       rvs$plot_solution <- solution_2
     } 
-    if (input$speed == "Fast - less detail"){
+    if (input$speed == "Fast"){
       glue::glue("Now it is in fassssst") %>% print
       rvs$plot_solution <- solution_3
     }

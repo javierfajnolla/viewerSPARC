@@ -82,7 +82,7 @@ navbarPage(title = div(
                                                                "Medium",
                                                                "Fast"),
                                                    inline = TRUE,
-                                                   selected = "Slow - max detail"),
+                                                   selected = "Slow"),
                                       
                                       plotlyOutput("plotly", 
                                                    width = "90%"),
