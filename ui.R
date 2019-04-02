@@ -37,11 +37,19 @@ navbarPage(title = div(
                                       draggable = TRUE, top = 60, left = 10, right = "auto", bottom = "auto",
                                       width = 400, height = "auto",
                                       
-                                      hr(),
+                                      # hr(),
                                       
                                       img(src = "sparc_logo_thin.png", 
                                           width = 250),
                                           # style = "text-align: center;"),
+                                      
+                                      hr(),
+                                      
+                                      radioButtons("type_map", label = NA,
+                                                   choices = c("PRIORITY", 
+                                                               "CARBON OFFSET"),
+                                                   inline = TRUE,
+                                                   selected = "PRIORITY"),
                                       
                                       hr(),
                                       
@@ -63,31 +71,36 @@ navbarPage(title = div(
                                       #                       selected = "Oranges",
                                       #                       width = 800)),
                                       
-                                      sliderInput("thr1", "Solution threshold:",
-                                                  min = 0, max = 100, step = 1,
-                                                  value = 17),
+                                      conditionalPanel(condition = "input.type_map == 'PRIORITY'",
+                                                       sliderInput("thr1", "Solution threshold:",
+                                                                   min = 0, max = 100, step = 1,
+                                                                   value = 17),
+                                                       
+                                                       # hr(),
+                                                       
+                                                       sliderInput("thr2", "Carbon offset",
+                                                                   min = 0, max = 100, step = 1,
+                                                                   value = tbl %>% 
+                                                                     filter(abs(perc_pixels - 17) == min(abs(perc_pixels - 17))) %>% 
+                                                                     pull(prop_carbon_strg)),
+                                                       
+                                                       # hr(),
+                                                       
+                                                       radioButtons("speed", "Speed of refresh (affects detail)",
+                                                                    choices = c("Slow", 
+                                                                                "Medium",
+                                                                                "Fast"),
+                                                                    inline = TRUE,
+                                                                    selected = "Slow"),
+                                                       
+                                                       plotlyOutput("plotly", 
+                                                                    width = "90%"),
+                                                       
+                                                       hr()
+                                                       ),
                                       
-                                      # hr(),
-                                      
-                                      sliderInput("thr2", "Carbon offset",
-                                                  min = 0, max = 100, step = 1,
-                                                  value = tbl %>% 
-                                                    filter(abs(perc_pixels - 17) == min(abs(perc_pixels - 17))) %>% 
-                                                    pull(prop_carbon_strg)),
-                                      
-                                      # hr(),
-                                      
-                                      radioButtons("speed", "Speed of refresh (affects detail)",
-                                                   choices = c("Slow", 
-                                                               "Medium",
-                                                               "Fast"),
-                                                   inline = TRUE,
-                                                   selected = "Slow"),
-                                      
-                                      plotlyOutput("plotly", 
-                                                   width = "90%"),
-                                      
-                                      hr()
+                                      conditionalPanel(condition = "input.type_map == 'CARBON OFFSET'",
+                                                       hr())
                                       
                         )#,
                         

@@ -127,3 +127,8 @@ tbl <- tbl %>%
 #   dplyr::select(prop_carbon_strg, perc_pixels) %>% 
 #   mutate(prop_carbon_strg = round(prop_carbon_strg, digits = 0))
 
+
+
+# Color Palettes for leaflet
+pal <- colorNumeric(c("yellow", "orange", "red"), values(carbon_stor),
+                   na.color = "transparent")
