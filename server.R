@@ -1,19 +1,16 @@
 library(tidyverse)
 library(leaflet)
 library(RColorBrewer)
-library(scales)
-library(lattice)
+# library(scales)
+# library(lattice)
 library(dplyr)
 library(plotly)
 
-# Leaflet bindings are a bit slow; for now we'll just sample to compensate
-# set.seed(100)
 
-# leaflet(options = leafletOptions(control = "topright")) %>%
-#   addTiles()
 
 # Reactive values object storage
 rvs <- reactiveValues()
+rvs$new_thr <- 0.8300012   # INITIAL VALUE CORRESPONDING TO 17%
 
 function(input, output, session) {
   
@@ -41,6 +38,29 @@ function(input, output, session) {
     clearControls()  # Can't make the legend to disappear...
   
   
+  ################ MAPS TO PLOT AND RESOLUTION
+  rvs$plot_solution <- solution
+  rvs$plot_carbon <- carbon_stor
+  
+  observeEvent(input$speed, {
+    if (input$speed == "Slow"){
+      glue::glue("Now it is in slow") %>% print
+      rvs$plot_solution <- solution
+      rvs$plot_carbon <- carbon_stor
+    } 
+    if (input$speed == "Medium"){
+      glue::glue("Now it is in medium") %>% print
+      rvs$plot_solution <- solution_2
+      rvs$plot_carbon <- carbon_stor_2
+    } 
+    if (input$speed == "Fast"){
+      glue::glue("Now it is in fassssst") %>% print
+      rvs$plot_solution <- solution_3
+      rvs$plot_carbon <- carbon_stor_3
+    }
+  })  
+  ################
+  
   observeEvent(input$type_map, {
     if(input$type_map == "CARBON OFFSET"){
       map %>% 
@@ -63,92 +83,127 @@ function(input, output, session) {
       # React to modification in Threshold 1
       observeEvent(input$thr1, {
         glue::glue("#> thr1 has changed - adjusting thr2") %>% print
+        glue::glue("#> thr1 is {input$thr1}") %>% print
+        glue::glue("#> thr2 value to replace is {input$thr2}") %>% print
         
         # Select posible values in thr2 corresponding to the change in thr1
         rvs$possibles_table_thr2 <- tbl %>%
           filter(abs(perc_pixels - input$thr1) == min(abs(perc_pixels - input$thr1)))
         rvs$possibles_values_thr2 <- rvs$possibles_table_thr2 %>% 
           pull(prop_carbon_strg)
+        glue::glue("#> Possible values thr2:") %>% print
+        cat(rvs$possibles_values_thr2, '\n')
         
         # Check in the current value in thr2 is among the possible values
         needs_change <- !(input$thr2 %in% rvs$possibles_values_thr2)
+        glue::glue("#> Is it old thr2 among possible values? {needs_change}") %>% print
         
         # If thr2 has to change, trigger the change and selection of new values
         if(needs_change){
           # Check if there is only one possible value or there are more
           if(length(rvs$possibles_values_thr2) > 1){
             # If more than one, select the first
-            rvs$possibles_values_thr2 <- rvs$possibles_values_thr2[1]
             rvs$possibles_table_thr2 <- rvs$possibles_table_thr2[1,]
+            rvs$possibles_values_thr2 <- rvs$possibles_table_thr2 %>% pull(prop_carbon_strg)
           }
           
           # Update the slider
           updateSliderInput(session = session, inputId = "thr2",
                             value = rvs$possibles_values_thr2)
           
-        }
-        
-        # save the new value to reclasify the raster
-        rvs$new_thr <- rvs$possibles_table_thr2 %>% pull(cutoff_sol)
+          # save the new value to reclasify the raster
+          rvs$new_thr <- rvs$possibles_table_thr2 %>% pull(cutoff_sol)
+          glue::glue("THE NEW THRESHOLD IS") %>% print
+          cat(rvs$new_thr, '\n')
+          
+        } #else {
+        #   # Check if there is only one possible value or there are more
+        #   if(length(rvs$possibles_values_thr2) > 1){
+        #     # If more than one, leave the one already selected
+        #     rvs$possibles_table_thr2 <- rvs$possibles_table_thr2 %>% 
+        #       filter(perc_pixels == input$thr1)
+        #     # rvs$possibles_values_thr2 <- rvs$possibles_table_thr2 %>% 
+        #     #   pull(prop_carbon_strg)
+        #   }
+        #   
+        #   # save the new value to reclasify the raster
+        #   rvs$new_thr <- rvs$possibles_table_thr2 %>% pull(cutoff_sol)
+        #   glue::glue("THE NEW THRESHOLD IS") %>% print
+        #   cat(rvs$new_thr, '\n')
+        #   
+        # }
+
       })
       
+      
+      ##########
       observeEvent(input$thr2, {
         glue::glue("#> thr2 has changed - adjusting thr1") %>% print
+        glue::glue("#> thr2 is {input$thr2}") %>% print
+        glue::glue("#> thr1 value to replace is {input$thr1}") %>% print
         
         # Select posible values in thr2 corresponding to the change in thr1
         rvs$possibles_table_thr1 <- tbl %>%
           filter(abs(prop_carbon_strg - input$thr2) == min(abs(prop_carbon_strg - input$thr2)))
         rvs$possibles_values_thr1 <- rvs$possibles_table_thr1 %>% 
           pull(perc_pixels)
+        glue::glue("#> Possible values thr1:") %>% print
+        cat(rvs$possibles_values_thr1, '\n')
         
         # Check in the current value in thr2 is among the possible values
         needs_change <- !(input$thr1 %in% rvs$possibles_values_thr1)
+        glue::glue("#> Is it old thr1 among possible values? {needs_change}") %>% print
         
         # If thr2 has to change, trigger the change and selection of new values
         if(needs_change){
           # Check if there is only one possible value or there are more
           if(length(rvs$possibles_values_thr1) > 1){
             # If more than one, select the first
-            rvs$possibles_values_thr1 <- rvs$possibles_values_thr1[1]
             rvs$possibles_table_thr1 <- rvs$possibles_table_thr1[1,]
+            rvs$possibles_values_thr1 <- rvs$possibles_table_thr1 %>% pull(perc_pixels)
           }
           
           # Update the slider
           updateSliderInput(session = session, inputId = "thr1",
                             value = rvs$possibles_values_thr1)
           
-        }
+          # save the new value to reclasify the raster
+          rvs$new_thr <- rvs$possibles_table_thr1 %>% pull(cutoff_sol)
+          glue::glue("THE NEW THRESHOLD IS") %>% print
+          cat(rvs$new_thr, '\n')
+          
+        } #else {
+        #   # Check if there is only one possible value or there are more
+        #   if(length(rvs$possibles_values_thr1) > 1){
+        #     # If more than one, leave the one already selected
+        #     rvs$possibles_table_thr1 <- rvs$possibles_table_thr1 %>% 
+        #       filter(prop_carbon_strg == input$thr2)
+        #     # rvs$possibles_values_thr1 <- rvs$possibles_table_thr1 %>% 
+        #     #   pull(perc_pixels)
+        #   }
+        #   
+        #   # save the new value to reclasify the raster
+        #   rvs$new_thr <- rvs$possibles_table_thr1 %>% pull(cutoff_sol)
+        #   glue::glue("THE NEW THRESHOLD IS") %>% print
+        #   cat(rvs$new_thr, '\n')
+        #   
+        # }
         
-        # save the new value to reclasify the raster
-        rvs$new_thr <- rvs$possibles_table_thr1 %>% pull(cutoff_sol)
       })
       
-      rvs$plot_solution <- solution
       
-      observeEvent(input$speed, {
-        if (input$speed == "Slow"){
-          glue::glue("Now it is in slow") %>% print
-          rvs$plot_solution <- solution
-        } 
-        if (input$speed == "Medium"){
-          glue::glue("Now it is in medium") %>% print
-          rvs$plot_solution <- solution_2
-        } 
-        if (input$speed == "Fast"){
-          glue::glue("Now it is in fassssst") %>% print
-          rvs$plot_solution <- solution_3
-        }
-      })  
+      #################
       
       observeEvent(rvs$new_thr, {
         # Threshold and reclassify
-        # sel_thr <- rvs$sel_row %>% pull(cutoff_sol)
-        glue::glue("{rvs$new_thr}") %>% print
-        
+        rcl_tbl <- tibble(from = c(0, rvs$new_thr),
+                          to = c(rvs$new_thr, max(values(rvs$plot_solution), na.rm = T)),
+                          becomes = c(NA, 1))
         sol_rcl <- rvs$plot_solution %>% 
-          reclassify(tibble(from = c(0, rvs$new_thr),
-                            to = c(rvs$new_thr, max(values(rvs$plot_solution), na.rm = T)),
-                            becomes = c(NA, 1)))
+          reclassify(rcl_tbl)
+        cat('\n')
+        print(rcl_tbl)
+        cat('\n')
         
         # Leaflet
         pal_A <- colorFactor(

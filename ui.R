@@ -15,7 +15,7 @@ vars <- c(
 navbarPage(title = div(
   div(
     id = "img-id",
-    img(src = "coded_JF.png", width = 180)
+    img(src = "coded_JF.png", width = 250)
   ),
   "SPARC VISUALIZER"
 ),
@@ -26,7 +26,8 @@ navbarPage(title = div(
                         tags$head(
                           # Include our custom CSS
                           includeCSS("styles.css"),
-                          includeScript("gomap.js")
+                          includeScript("gomap.js"),
+                          includeScript("lazy_slider.js")
                         ),
                         
                         # If not using custom CSS, set height of leafletOutput to a number instead of percent
@@ -51,25 +52,14 @@ navbarPage(title = div(
                                                    inline = TRUE,
                                                    selected = "PRIORITY"),
                                       
+                                      radioButtons("speed", "Speed of refresh (affects detail)",
+                                                   choices = c("Slow", 
+                                                               "Medium",
+                                                               "Fast"),
+                                                   inline = TRUE,
+                                                   selected = "Fast"),
+                                      
                                       hr(),
-                                      
-                                      # checkboxInput("layA", label = "LAYER 1", value = T),
-                                      
-                                      # column(6, numericInput("thresholds_A", "Number Colors",
-                                      #              min = 2, max = 3, value = 2)),
-                                      # 
-                                      # column(6, selectInput("color_A", "Palette",
-                                      #                       c("Purple to yellow" = "viridis",
-                                      #                         "Yellow to black" = "magma",
-                                      #                         "Greens" = "Greens",
-                                      #                         "Blue to purple" = "BuPu",
-                                      #                         "Oranges" = "Oranges",
-                                      #                         "Blues" = "Blues",
-                                      #                         "Greys" = "Greys",
-                                      #                         "Reds" = "Reds",
-                                      #                         "Purples" = "Purples"),
-                                      #                       selected = "Oranges",
-                                      #                       width = 800)),
                                       
                                       conditionalPanel(condition = "input.type_map == 'PRIORITY'",
                                                        sliderInput("thr1", "Solution threshold:",
@@ -85,13 +75,6 @@ navbarPage(title = div(
                                                                      pull(prop_carbon_strg)),
                                                        
                                                        # hr(),
-                                                       
-                                                       radioButtons("speed", "Speed of refresh (affects detail)",
-                                                                    choices = c("Slow", 
-                                                                                "Medium",
-                                                                                "Fast"),
-                                                                    inline = TRUE,
-                                                                    selected = "Slow"),
                                                        
                                                        plotlyOutput("plotly", 
                                                                     width = "90%"),
