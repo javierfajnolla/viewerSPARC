@@ -27,7 +27,7 @@ navbarPage(title = div(
                           # Include our custom CSS
                           includeCSS("styles.css"),
                           includeScript("gomap.js"),
-                          includeScript("lazy_slider.js")
+                          includeScript("lazy_slider.js")  # Slider only react when releasing mouse - taken from https://stackoverflow.com/questions/29222603/shiny-slider-restrict-reaction-to-releasing-left-mouse-button
                         ),
                         
                         # If not using custom CSS, set height of leafletOutput to a number instead of percent
