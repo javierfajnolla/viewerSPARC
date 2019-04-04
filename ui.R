@@ -2,22 +2,16 @@ library(leaflet)
 library(tidyverse)
 library(plotly)
 
-# Choices for drop-downs
-vars <- c(
-  "Is SuperZIP?" = "superzip",
-  "Centile score" = "centile",
-  "College education" = "college",
-  "Median income" = "income",
-  "Population" = "adultpop"
-)
-
-
 navbarPage(title = div(
+  div(
+    id = "img-sparc",
+    img(src = "sparc_logo_thin_grey.png", width = 170)
+  ),
   div(
     id = "img-id",
     img(src = "coded_JF.png", width = 250)
   ),
-  "SPARC VISUALIZER"
+  "_________________"
 ),
            id = "nav",
            tabPanel("Interactive map",
@@ -40,8 +34,8 @@ navbarPage(title = div(
                                       
                                       # hr(),
                                       
-                                      img(src = "sparc_logo_thin.png", 
-                                          width = 250),
+                                      # img(src = "sparc_logo_thin.png", 
+                                      #     width = 250),
                                           # style = "text-align: center;"),
                                       
                                       hr(),
@@ -59,7 +53,11 @@ navbarPage(title = div(
                                                    inline = TRUE,
                                                    selected = "Fast"),
                                       
-                                      hr(),
+                                      sliderInput("PA_alpha", "Opacity of Protected Areas:",
+                                                  min = 0, max = 1, step = 0.1,
+                                                  value = 0.5),
+                                      
+                                      # hr(),
                                       
                                       conditionalPanel(condition = "input.type_map == 'PRIORITY'",
                                                        sliderInput("thr1", "Solution threshold:",

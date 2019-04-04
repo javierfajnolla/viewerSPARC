@@ -49,6 +49,12 @@ h1, h2, h3, h4 { font-weight: 400; }
   top: 5px;
 }
 
+#img-sparc{
+  position: fixed;
+  left: 10px;
+  top: 5px;
+}
+
 /* If not using map tiles, show a white background */
 .leaflet-container {
   background-color: white !important;

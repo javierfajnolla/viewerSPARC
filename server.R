@@ -17,7 +17,8 @@ function(input, output, session) {
   ## Interactive Map ###########################################
   output$map <- renderLeaflet({
     # leaflet(TAC_border) %>% 
-    leaflet(options = leafletOptions(zoomControl = FALSE)) %>%
+    leaflet(PAs_shp, 
+            options = leafletOptions(zoomControl = FALSE)) %>%
         htmlwidgets::onRender("function(el, x) {    
                                 L.control.zoom({ position: 'topright' }).addTo(this)
                               }") %>% # This code just moves the zoom buttons to the right
@@ -34,7 +35,7 @@ function(input, output, session) {
   })
   
   # Create map proxy to make further changes to existing map
-  map <- leafletProxy("map") %>% 
+  map <- leafletProxy("map", data = PAs_shp) %>% 
     clearControls()  # Can't make the legend to disappear...
   
   
@@ -61,22 +62,25 @@ function(input, output, session) {
   })  
   ################
   
-  observeEvent(input$type_map, {
+  observeEvent(
+    c(input$type_map, input$PA_alpha), {
     if(input$type_map == "CARBON OFFSET"){
       map %>% 
         clearControls() %>%    # Refreshes the legend
+        clearGroup("PAs") %>% 
         clearGroup("solutions_A") %>%
         addRasterImage(carbon_stor,
                        colors = pal,
-                       # opacity = input$opacity_A,
                        group = "Carbon") %>%
         addLegend(pal = pal,
                   values = values(carbon_stor),
                   title = "Carbon storage",
                   group = "Carbon",
-                  # # layerId = "raster",
-                  # # labFormat = labelFormat(transform = function(x) sort(x, decreasing = TRUE)),
-                  position = "topright")
+                  position = "topright") %>% 
+        addPolygons(color = "#444444", fill = "#444444",
+                    weight = 1, smoothFactor = 0.5,
+                    opacity = input$PA_alpha, fillOpacity = input$PA_alpha,
+                    group = "PAs")
     }
     
     if(input$type_map == "PRIORITY"){
@@ -194,7 +198,8 @@ function(input, output, session) {
       
       #################
       
-      observeEvent(rvs$new_thr, {
+      observeEvent(
+        c(rvs$new_thr, input$PA_alpha), {
         # Threshold and reclassify
         rcl_tbl <- tibble(from = c(0, rvs$new_thr),
                           to = c(rvs$new_thr, max(values(rvs$plot_solution), na.rm = T)),
@@ -215,18 +220,18 @@ function(input, output, session) {
         
         map %>% 
           clearControls() %>%    # Refreshes the legend
+          clearGroup("PAs") %>% 
           clearGroup("Carbon") %>%
           clearGroup("solutions_A") %>%
           addRasterImage(sol_rcl,
                          colors = pal_A,
                          # opacity = input$opacity_A,
-                         group = "solutions_A") #%>%
-        # addLegend(pal = pal_A,
-        #           values = c(NA, 1),
-        #           group = "solutions_A",
-        #           layerId = "raster",
-        #           labFormat = labelFormat(transform = function(x) sort(x, decreasing = TRUE)),
-        #           position = "topright")
+                         group = "solutions_A") %>%
+          addPolygons(color = "#444444", fill = "#444444",
+                      weight = 1, smoothFactor = 0.5,
+                      opacity = input$PA_alpha, fillOpacity = input$PA_alpha,
+                      group = "PAs")
+          
       })
       
       ### Plotly graph

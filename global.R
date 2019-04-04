@@ -100,7 +100,9 @@ library(leaflet)
 
 #### Neotropics
 # Solution
-solution <- raster("data/solutions/Neo_20190403/NT_Priority_for_Viewer/NT_RCP85_BLP1_PA_inv_mask.CAZ_MEBLP1000.rank.compressed.tif")
+# solution <- raster("data/solutions/Neo_20190403/NT_Priority_for_Viewer/NT_RCP85_BLP1_PA.tif")
+# writeRaster(solution_2, "data/solutions/Neo_20190403/NT_Priority_for_Viewer/NT_RCP85_BLP1_PA_x2.tif")
+solution <- raster("data/solutions/Neo_20190403/NT_Priority_for_Viewer/NT_RCP85_BLP1_PA_x2.tif")
 solution_2 <- solution %>%
   aggregate(fact = 2, fun = "mean")
 solution_3 <- solution %>%
@@ -108,7 +110,9 @@ solution_3 <- solution %>%
 
 mask <- solution / solution
 # Carbon storage
-carbon_stor <- raster("data/solutions/Neo_20190403/NT_Priority_for_Viewer/NT_total_carbon_tonnes.tif")
+# carbon_stor <- raster("data/solutions/Neo_20190403/NT_Priority_for_Viewer/NT_total_carbon_tonnes.tif")
+# writeRaster(carbon_stor_2, "data/solutions/Neo_20190403/NT_Priority_for_Viewer/NT_total_carbon_tonnes_x2.tif")
+carbon_stor <- raster("data/solutions/Neo_20190403/NT_Priority_for_Viewer/NT_total_carbon_tonnes_x2.tif")
 max_carbon <- carbon_stor %>% values %>% sum(na.rm = T)
 
 carbon_stor_2 <- carbon_stor %>%
@@ -154,6 +158,10 @@ carbon_stor_3 <- carbon_stor %>%
 tbl <- readRDS("data/tables/tbl_Neo.rds")
 
 
+# Protected areas
+PAs_shp <- readOGR("data/solutions/Neo_20190403/NT_Priority_for_Viewer/nt_wdpa_2_5min_hiermask_inv.shp")
+
 # Color Palettes for leaflet
 pal <- colorNumeric(c("yellow", "orange", "red"), values(carbon_stor),
                    na.color = "transparent")
+
