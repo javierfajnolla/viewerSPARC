@@ -1,0 +1,3 @@
+NT_RCP85_BLP1_PA.tif -> NT_RCP85_BLP1_PA_inv_mask.CAZ_MEBLP1000.rank.compressed.tif
+
+# Ha sido necesario cambiarlo a un nombre más corto
